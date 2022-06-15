@@ -17,5 +17,5 @@ A practical recipe app  focusing on the backend API development with the followi
   - [ ] PostgreSQL container
 
 - [ ] Automated API documentations using Swagger
-- [ ] Github action for automation
+- [x] Github action for automation
 - [ ] Development using TDD
