@@ -11,12 +11,6 @@ CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 
-TEST_PAY_LOAD = {
-    'email': 'test@example.com',
-    'password': 'secret',
-    'name': 'Test name',
-}
-
 
 def create_user(**params):
     # create a new user, return user object
@@ -32,18 +26,28 @@ class PublicUserAPITests(TestCase):
 
     def test_create_user_success(self):
         # Test for: create user successfully
-        res = self.client.post(CREATE_USER_URL, TEST_PAY_LOAD)
+        payload = {
+            'email': 'test@example.com',
+            'password': 'secret',
+            'name': 'Test name',
+        }
+        res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        user = get_user_model().objects.get(email=TEST_PAY_LOAD['email'])
-        self.assertTrue(user.check_password(TEST_PAY_LOAD['password']))
+        user = get_user_model().objects.get(email=payload['email'])
+        self.assertTrue(user.check_password(payload['password']))
         self.assertNotIn('password', res.data)  # password should be hashed
 
     def test_user_with_email_exists_error(self):
         # test for the case: user to be created already exists
         # client should return code 400 bad request
-        create_user(**TEST_PAY_LOAD)
-        res = self.client.post(CREATE_USER_URL, TEST_PAY_LOAD)
+        payload = {
+            'email': 'test@example.com',
+            'password': 'secret',
+            'name': 'Test name',
+        }
+        create_user(**payload)
+        res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -51,8 +55,11 @@ class PublicUserAPITests(TestCase):
         # test for: password too short error(< 5 chars)
         # client should return code 400
         # user should not exists in db
-        test_pay_load = TEST_PAY_LOAD.copy()
-        test_pay_load['password'] = 'pwd'
+        test_pay_load = {
+            'email': 'test@example.com',
+            'password': 'pwd',
+            'name': 'Test name',
+        }
         res = self.client.post(CREATE_USER_URL, test_pay_load)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -65,10 +72,15 @@ class PublicUserAPITests(TestCase):
         # Assume user existing in db
         # tests: 1. token is generated and included in 'POST' response,
         #        2. status code 200 OK is returned
-        create_user(**TEST_PAY_LOAD)
+        payload = {
+            'email': 'test@example.com',
+            'password': 'secret',
+            'name': 'Test name',
+        }
+        create_user(**payload)
         pay_load = {
-            'email': TEST_PAY_LOAD['email'],
-            'password': TEST_PAY_LOAD['password']
+            'email': payload['email'],
+            'password': payload['password']
         }
         res = self.client.post(TOKEN_URL, pay_load)
 
@@ -77,10 +89,10 @@ class PublicUserAPITests(TestCase):
 
     def test_create_token_bad_credential(self):
         # Test for return error is credential is bad
-        create_user(**TEST_PAY_LOAD)
+        create_user(email='test@example.com', password='goodpass')
         payload = {
-            'email': TEST_PAY_LOAD['email'],
-            'password': 'somethingelse',
+            'email': 'test@example.com',
+            'password': 'badpass',
         }
         res = self.client.post(TOKEN_URL, payload)
 
@@ -89,9 +101,8 @@ class PublicUserAPITests(TestCase):
 
     def test_create_token_blank_password(self):
         # test for return error if password is blank
-        create_user(**TEST_PAY_LOAD)
         payload = {
-            'email': TEST_PAY_LOAD['email'],
+            'email': 'test@example.com',
             'password': '',
         }
         res = self.client.post(TOKEN_URL, payload)
@@ -110,7 +121,11 @@ class PrivateUserApiTests(TestCase):
     # Test api that requires authentication
 
     def setUp(self):
-        self.user = create_user(**TEST_PAY_LOAD)
+        self.user = create_user(
+            email='test@example.com',
+            password='testpass123',
+            name='Test Name',
+        )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
@@ -135,7 +150,7 @@ class PrivateUserApiTests(TestCase):
         # test updating the user profile for authenticated user
         pay_load = {
             'name': 'updatedname',
-            'password': 'updatedpwd',
+            'password': 'updatedpwd123',
         }
 
         res = self.client.patch(ME_URL, pay_load)
