@@ -13,17 +13,22 @@ from core.models import Tag
 from recipe.serializers import TagSerializer
 
 
-TAGS_URL = reverse('recipe:tags-list')
+TAGS_URL = reverse('recipe:tag-list')
 
 
-def create_user(email='user@example', password = 'secret'):
+def detail_url(tag_id):
+    """create and return a tag detail url"""
+    return reverse('recipe:tag-detail', args=[tag_id])
+
+
+def create_user(email='user@example', password='secret'):
     """Create user for testing"""
     return get_user_model().objects.create_user(email, password)
 
 
 class PublicTagsAPITests(TestCase):
     """Test for unauthenticated APT requests"""
-    
+
     def setUp(self):
         self.client = APIClient()
 
@@ -48,7 +53,7 @@ class PrivateTagsAPITests(TestCase):
         for name in tag_names:
             Tag.objects.create(user=self.user, name=name)
         res = self.client.get(TAGS_URL)
-        tags = Tag.objects.all().order_by(['-name'])
+        tags = Tag.objects.all().order_by('-name')
         serializer = TagSerializer(tags, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -66,3 +71,25 @@ class PrivateTagsAPITests(TestCase):
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['name'], tag.name)
         self.assertEqual(res.data[0]['id'], tag.id)
+
+    def test_update_tag(self):
+        """Test updating a tag"""
+        tag = Tag.objects.create(user=self.user, name='Test tag')
+        payload = {'name': 'Update test tag'}
+        tag_url = detail_url(tag.id)
+        res = self.client.patch(tag_url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        tag.refresh_from_db()
+        self.assertEqual(tag.name, payload['name'])
+
+    def test_delete_tag(self):
+        """Test deleting a tag"""
+        tag = Tag.objects.create(user=self.user, name='Delete tag')
+
+        url = detail_url(tag.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        tags = Tag.objects.filter(user=self.user)
+        self.assertFalse(tags.exists())
