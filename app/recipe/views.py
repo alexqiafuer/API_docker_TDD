@@ -46,7 +46,7 @@ class TagViewSet(mixins.UpdateModelMixin,
 
 class IngredientViewSet(mixins.UpdateModelMixin,
                         mixins.DestroyModelMixin,
-                        mixins.ListModelMixin, 
+                        mixins.ListModelMixin,
                         viewsets.GenericViewSet):
     """Manage ingredients CRUD"""
     serializer_class = serializers.IngredientSerializer

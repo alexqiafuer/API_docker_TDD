@@ -47,9 +47,9 @@ class PrivateIngredientAPITests(TestCase):
 
     def test_retrieve_ingredients(self):
         """Test for retrieving ingredients"""
-        for name in ['Cheese', 'Pepper','Salt']:
+        for name in ['Cheese', 'Pepper', 'Salt']:
             Ingredient.objects.create(user=self.user, name=name)
-        
+
         res = self.client.get(INGREDIENT_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
