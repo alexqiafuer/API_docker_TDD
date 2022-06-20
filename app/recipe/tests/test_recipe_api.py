@@ -314,12 +314,14 @@ class PrivateRecipeAPITests(TestCase):
 
     def test_create_recipe_with_existing_ingredient(self):
         """Test creating a recipe with existing ingredient"""
-        ingredient_exist = Ingredient.objects.create(user=self.user, name='Chinese')
+        ingredient_exist = Ingredient.objects.create(
+            user=self.user, name='Chinese')
         payload = {
             'title': 'Test recipe',
             'time_minutes': '13',
             'price': Decimal('19.9'),
-            'ingredients': [{'name': 'Chinese'}, {'name': 'old'}, {'name': 'good'}]
+            'ingredients': 
+                [{'name': 'Chinese'}, {'name': 'old'}, {'name': 'good'}]
         }
         res = self.client.post(RECIPE_URL, payload, format='json')
 

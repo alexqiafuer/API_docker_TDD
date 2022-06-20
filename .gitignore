@@ -51,3 +51,4 @@ docs/_build/
 
 # Myself
 db.sqlite3
+.gitignore
