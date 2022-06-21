@@ -397,7 +397,7 @@ class PrivateRecipeAPITests(TestCase):
         r2.tags.add(tag2)
         r3 = create_recipe(user=self.user, title='Fish and Chips')
 
-        params = {'tags':f"{tag1.id}, {tag2.id}"}
+        params = {'tags': f"{tag1.id}, {tag2.id}"}
         res = self.client.get(RECIPE_URL, params)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -409,7 +409,7 @@ class PrivateRecipeAPITests(TestCase):
         self.assertNotIn(s3.data, res.data)
 
     def test_filter_by_ingredients(self):
-        """Test filtering recipes by ingredients, 
+        """Test filtering recipes by ingredients,
         similar to filter by tags"""
         r1 = create_recipe(user=self.user, title='Chinese Pork')
         r2 = create_recipe(user=self.user, title='British fish')
@@ -419,7 +419,7 @@ class PrivateRecipeAPITests(TestCase):
         r2.ingredients.add(ingredient2)
         r3 = create_recipe(user=self.user, title='Fish and Chips')
 
-        params = {'ingredients':f"{ingredient1.id}, {ingredient2.id}"}
+        params = {'ingredients': f"{ingredient1.id}, {ingredient2.id}"}
         res = self.client.get(RECIPE_URL, params)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

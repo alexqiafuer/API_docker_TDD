@@ -102,7 +102,7 @@ class PrivateTagsAPITests(TestCase):
         recipe = Recipe.objects.create(
             user=self.user,
             title='Sample recipe',
-            time_minutes = 20,
+            time_minutes=20,
             price=Decimal('11.45'),
         )
         recipe.tags.add(tag1)
@@ -120,13 +120,13 @@ class PrivateTagsAPITests(TestCase):
         recipe1 = Recipe.objects.create(
             user=self.user,
             title='Sample recipe1',
-            time_minutes = 21,
+            time_minutes=21,
             price=Decimal('11.45'),
         )
         recipe2 = Recipe.objects.create(
             user=self.user,
             title='Sample recipe2',
-            time_minutes = 22,
+            time_minutes=22,
             price=Decimal('12.45'),
         )
         recipe1.tags.add(tag)
