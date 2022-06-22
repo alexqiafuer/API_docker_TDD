@@ -33,10 +33,9 @@ RUN python -m venv /py && \
 
 ENV PATH="/scripts:/py/bin:$PATH"
 
-USER django-user
-
 COPY ./app /app
 COPY ./scripts /scripts
 RUN chmod -R +x /scripts
 
+USER django-user
 CMD ["run.sh"]
