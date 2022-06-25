@@ -1,4 +1,5 @@
 #!/bin/sh
+# nginx runserver
 
 set -e
 
